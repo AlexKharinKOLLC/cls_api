@@ -1,4 +1,5 @@
 from crontab import CronTab
+from db_utils import DBUtils
 
 
 def add_task(user=None, command=None, timeout=0):
@@ -20,4 +21,11 @@ def remove_tasks(user=None):
     cron = CronTab(user=user)
     cron.remove_all()
     cron.write()
+    
     print("Tasks for user %s removed\n" % user)
+
+
+def db_info(count=None):
+    db = DBUtils()
+    db.create()
+    db.load_data(count)

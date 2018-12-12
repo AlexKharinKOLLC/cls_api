@@ -7,11 +7,12 @@ from settings import (
 
 def fetch():
     data = requests.get(API_URL, params={'format': 'json'})
-    load_to_fifo(data.content)
+    load_to_fifo(data.content.decode("utf-8"))
 
 
 if __name__ == "__main__":
     fetch()
+
 
 
 
