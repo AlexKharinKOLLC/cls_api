@@ -1,3 +1,5 @@
+import os
+import settings
 from crontab import CronTab
 from db_utils import DBUtils
 
@@ -25,7 +27,15 @@ def remove_tasks(user=None):
     print("Tasks for user %s removed\n" % user)
 
 
-def db_info(count=None):
+def db_info():
     db = DBUtils()
     db.create()
-    db.load_data(count)
+    db.load_data(settings.DB_RECORDS_COUNT)
+
+
+def db_drop():
+    if os.path.exists(settings.DB_NAME):
+        os.remove(settings.DB_NAME)
+        print("DB dropped")
+    else:
+        print("DB doesn't exist")

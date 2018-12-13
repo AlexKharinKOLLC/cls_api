@@ -19,13 +19,15 @@ def logger_init(func):
 
     
 @logger_init
-def warning(data, logger):
-    logger.debug("WARNING: %s" % data)
+def warning(data, logger=None):
+    if logger:
+        logger.debug("WARNING: %s" % data)
 
 
 @logger_init
-def error(data, logger):
-    logger.debug("ERROR: %s" % data)
+def error(data, logger=None):
+    if logger:
+        logger.debug("ERROR: %s" % data)
 
 
 def load_to_fifo(data):
