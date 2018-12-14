@@ -1,0 +1,5 @@
+crontab
+Celery
+simplejson
+requests
+pika

@@ -1,7 +1,15 @@
 import os
 import settings
-from crontab import CronTab
+from celery import Celery
+from fetcher import fetch
+from processor import process
 from db_utils import DBUtils
+from crontab import CronTab
+
+app = Celery('manager', backend='rpc://', broker='amqp://localhost')
+
+app.task(fetch)
+app.task(process)
 
 
 def add_task(user=None, command=None, timeout=0):

@@ -1,10 +1,13 @@
-.PHONY: create clean check-db drop-db
+.PHONY: start-daemon add-cron clean-cron check-db drop-db
 
-create:
+start-daemon:
+	celery -A manager worker --loglevel=info
+
+add-cron:
 	python3 -c "from manager import add_task; add_task(user = '$(shell whoami)', command = '$(shell pwd)/fetcher.py', timeout = 1)" && \
 	python3 -c "from manager import add_task; add_task(user = '$(shell whoami)', command = '$(shell pwd)/processor.py', timeout = 5)"
 
-clean:
+clean-cron:
 	python3 -c "from manager import remove_tasks; remove_tasks(user = '$(shell whoami)')"
 
 check-db:

@@ -3,8 +3,7 @@ import errno
 import settings
 import tempfile
 import logging.handlers
-
-FIFO = os.path.join(tempfile.gettempdir(), settings.FIFO_NAME)
+import pika
 
 
 def logger_init(func):
@@ -31,17 +30,26 @@ def error(data, logger=None):
 
 
 def load_to_fifo(data):
-    with open(FIFO, 'a') as file:
-        file.write("%s\n" % data)
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+    channel.queue_declare(queue='cls')
+
+    channel.basic_publish(exchange='',
+                          routing_key='cls',
+                          body=data)
+    connection.close()
 
 
 def read_from_fifo():
-    if not os.path.exists(FIFO):
-        return []
-    
-    data = []
-    with open(FIFO, 'r') as file:
-        for line in file:
-            data.append(line)
-    os.remove(FIFO)
-    return data
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+    channel.queue_declare(queue='cls')
+
+    def callback(ch, method, properties, body):
+        print(" [x] Received %r" % body)
+
+    channel.basic_consume(callback,
+                          queue='cls',
+                          no_ack=True)
+    channel.start_consuming()
+    connection.close()

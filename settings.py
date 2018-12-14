@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from celery import Celery
 
 FIFO_NAME = 'testpipe.data'
 API_URL = 'https://api.github.com/'
@@ -11,3 +12,5 @@ DB_TABLES = [
         'attr': 'datetime text, src text, desc text'
     }
 ]
+
+app = Celery('manager', backend='amqp://', broker='amqp://localhost')
