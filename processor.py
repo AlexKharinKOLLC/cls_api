@@ -21,6 +21,7 @@ def process():
             for key, val in msg.items():
                 db_record = dict(zip(["desc", "src"], [key, val]))
                 db.save_data(db_record)
+        print("Data received, msg_cnt: %d" % len(data))
     db.close()
 
 

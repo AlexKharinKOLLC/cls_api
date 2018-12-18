@@ -1,5 +1,4 @@
-crontab
-Celery
-simplejson
-requests
-pika
+celery==4.2.1
+requests==2.21.0
+simplejson==3.16.0
+pika==0.12.0

@@ -1,9 +1,5 @@
 import requests
-from utils import (
-    load_to_fifo,
-    warning,
-    error
-)
+from utils import load_to_fifo
 from http import HTTPStatus
 from settings import API_URL
 from celery import shared_task
@@ -14,19 +10,17 @@ def fetch():
     try:
         data = requests.get(API_URL, params={'format': 'json'})
     except requests.HTTPError as e:
-        error(e)
+        print(e)
     finally:
         if data.status_code == HTTPStatus.OK:
-            return data.content.decode("utf-8")
+            load_to_fifo(data.content.decode("utf-8"))
+            print("Data fetched")
         else:
-            warning("Bad HTTP status code - %s" % data.status_code)
-            return 'asd'
+            print("WARNING: Bad HTTP status code - %s" % data.status_code)
     
 
 if __name__ == "__main__":
-    res = fetch.delay()
-    load_to_fifo(res.get(timeout=15))
-
+    fetch.delay()
 
 
 
