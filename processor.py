@@ -1,6 +1,7 @@
 from utils import read_from_fifo
 from db_utils import DBUtils
 import simplejson
+from celery import shared_task
 
 
 def parse_data(data):
@@ -10,6 +11,7 @@ def parse_data(data):
     return result
 
 
+@shared_task(name="processor.process")
 def process():
     db = DBUtils()
     db.create()
@@ -19,8 +21,9 @@ def process():
             for key, val in msg.items():
                 db_record = dict(zip(["desc", "src"], [key, val]))
                 db.save_data(db_record)
+        print("Data received, msg_cnt: %d" % len(data))
     db.close()
 
 
 if __name__ == "__main__":
-    process()
+    process.delay()
