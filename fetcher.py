@@ -5,7 +5,7 @@ from settings import API_URL
 from celery import shared_task
 
 
-@shared_task(name="fetcher.fetch")
+@shared_task(name="fetcher.fetch", time_limit=10)
 def fetch():
     try:
         data = requests.get(API_URL, params={'format': 'json'})
