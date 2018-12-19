@@ -1,4 +1,4 @@
-from utils import read_from_fifo
+from queue_utils import read_from_queue
 from db_utils import DBUtils
 from celery import shared_task
 
@@ -7,7 +7,7 @@ from celery import shared_task
 def process():
     db = DBUtils()
     db.create()
-    data = read_from_fifo()
+    data = read_from_queue()
     if len(data) > 0:
         for msg in data:
             for key, val in msg.items():
