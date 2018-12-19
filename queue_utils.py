@@ -16,7 +16,7 @@ def queue_init(func):
 
 
 @queue_init
-def load_to_fifo(data, queue=None):
+def write_in_queue(data, queue=None):
     try:
         queue.put(data, routing_key=settings.ROUTING_KEY)
     except Exception as e:
@@ -24,7 +24,7 @@ def load_to_fifo(data, queue=None):
 
 
 @queue_init
-def read_from_fifo(queue=None):
+def read_from_queue(queue=None):
     data = []
     try:
         for _ in range(queue.qsize()):
