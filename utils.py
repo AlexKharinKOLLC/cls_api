@@ -28,7 +28,7 @@ def read_from_fifo(queue=None):
     data = []
     try:
         for _ in range(queue.qsize()):
-            msg = queue.get()
+            msg = queue.get(block=False, timeout=5)
             if msg:
                 data.append(simplejson.loads(msg.body))
                 msg.ack()

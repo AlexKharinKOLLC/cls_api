@@ -3,7 +3,7 @@ from db_utils import DBUtils
 from celery import shared_task
 
 
-@shared_task(name="processor.process")
+@shared_task(name="processor.process", time_limit=30)
 def process():
     db = DBUtils()
     db.create()
