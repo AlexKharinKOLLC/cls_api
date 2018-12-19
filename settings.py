@@ -10,4 +10,9 @@ DB_TABLES = [
         'attr': 'datetime text, src text, desc text'
     }
 ]
+
+# CELERY QUEUES CONFIG
+BACKEND_URL = 'amqp://'
+BROKER_URL = 'amqp://guest:guest@localhost//'
 QUEUE_NAME = 'cls_api'
+ROUTING_KEY = 'cls_api'
