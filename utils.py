@@ -1,41 +1,40 @@
 import settings
-import pika
-from pika.spec import Basic
+import simplejson
+from kombu import Connection
 
 
 def queue_init(func):
     def inner(*args, **kwargs):
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-        channel = connection.channel()
-        res = func(*args, **kwargs, channel=channel)
-        connection.close()
+        connection = Connection(settings.BROKER_URL)
+        connection.connect()
+
+        queue = connection.SimpleQueue(settings.QUEUE_NAME)
+        res = func(*args, **kwargs, queue=queue)
+        connection.release()
         return res
     return inner
 
 
 @queue_init
-def load_to_fifo(data, channel=None):
-    if not channel:
-        return
-
-    channel.queue_declare(queue=settings.QUEUE_NAME)
-
-    channel.basic_publish(exchange='',
-                          routing_key=settings.QUEUE_NAME,
-                          body=data)
+def load_to_fifo(data, queue=None):
+    try:
+        queue.put(data, routing_key=settings.ROUTING_KEY)
+    except Exception as e:
+        print(e)
 
 
 @queue_init
-def read_from_fifo(channel=None):
-    if not channel:
-        return []
-
+def read_from_fifo(queue=None):
     data = []
-    while True:
-        code, props, body = channel.basic_get(queue=settings.QUEUE_NAME, no_ack=True)
-        if isinstance(code, Basic.GetOk):
-            data.append(body)
-        else:
-            break
+    try:
+        for _ in range(queue.qsize()):
+            msg = queue.get()
+            if msg:
+                data.append(simplejson.loads(msg.body))
+                msg.ack()
+            else:
+                break
+    except Exception as e:
+        print(e)
 
     return data

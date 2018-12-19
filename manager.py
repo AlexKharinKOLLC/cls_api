@@ -6,7 +6,8 @@ from processor import process
 from db_utils import DBUtils
 from celery.schedules import crontab
 
-app = Celery('manager', backend='rpc://', broker='amqp://localhost')
+app = Celery('manager', backend=settings.BACKEND_URL, broker=settings.BROKER_URL)
+
 
 app.task(fetch)
 app.task(process)
